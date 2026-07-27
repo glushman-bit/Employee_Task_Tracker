@@ -12,6 +12,7 @@ djangorestframework = "^3.17.1"
 djangorestframework-simplejwt = "^5.5.1"
 python-dotenv = "^1.2.2"
 psycopg = {extras = ["binary"], version = "^3.3.4"}
+django-phonenumber-field = {extras = ["phonenumbers"], version = "^8.5.0"}
 
 
 [build-system]
