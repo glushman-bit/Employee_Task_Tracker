@@ -1,3 +1,36 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
+from phonenumber_field.modelfields import PhoneNumberField
 
-# Create your models here.
+class User(AbstractUser):
+    """Класс пользователей."""
+
+    username = None
+    email = models.EmailField(
+        unique=True,
+        verbose_name='Email',
+        help_text='Введите Email',
+    )
+    phone_number = PhoneNumberField(
+        unique=True,
+        blank=True,
+        null=True,
+        verbose_name='Phone Number',
+        help_text='Введите номер телефона',
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Created at',
+        help_text='Дата создания',
+    )
+
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
+
+    def __str__(self):
+        return self.email
