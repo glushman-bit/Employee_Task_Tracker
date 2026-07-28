@@ -1,8 +1,9 @@
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.generics import CreateAPIView
+from rest_framework.permissions import AllowAny
+from rest_framework.generics import CreateAPIView, get_object_or_404
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from .serializer import UserSerializer, UserCreateSerializer
-from .permissions import IsProfile
 
 from users.models import User
 
@@ -10,17 +11,17 @@ from users.models import User
 class UserViewSet(ModelViewSet):
     """Класс работы с пользователями."""
 
-    queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
 
-    def get_permissions(self):
-        """Получение прав доступа для изменения профиля пользователя."""
+    def get_queryset(self):
+        """Получение прав доступа для изменения профиля пользователя.
+            Пользователь может видеть и редактировать только себя,
+            Администратор может видеть и редактировать всех."""
 
-        if self.action in ['update', 'partial_update']:
-            self.permission_classes = (IsProfile,)
+        if self.request.user.is_staff:
+            return User.objects.all()
 
-        return super().get_permissions()
+        return User.objects.filter(id=self.request.user.id)
 
 
 class UserCreateAPIView(CreateAPIView):
@@ -30,4 +31,12 @@ class UserCreateAPIView(CreateAPIView):
     permission_classes = [AllowAny]
 
 
+class VerificationEmailView(APIView):
+    """Подтверждение электронной почты."""
 
+    def get(self, token):
+        user = get_object_or_404(User, email_verification_token=token)
+        user.is_active = True
+        user.save()
+
+        return Response({'message': 'Email успешно подтвержден'})

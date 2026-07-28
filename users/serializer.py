@@ -1,7 +1,7 @@
-from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
 from users.models import User
+from users.services import send_verification_email
 
 
 class UserSerializer(ModelSerializer):
@@ -33,8 +33,10 @@ class UserCreateSerializer(ModelSerializer):
     def create(self, validated_data):
         """Метод создания пользователя."""
 
-        user = User(email=validated_data['email'], is_active=True)
+        user = User(email=validated_data['email'], is_active=False)
         user.set_password(validated_data['password'])
         user.save()
+
+        send_verification_email(user)
 
         return user
