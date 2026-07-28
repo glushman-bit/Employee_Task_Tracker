@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
@@ -22,6 +24,12 @@ class User(AbstractUser):
         auto_now_add=True,
         verbose_name='Created at',
         help_text='Дата создания',
+    )
+    email_verification_token = models.UUIDField(
+        default=uuid.uuid4,
+        unique=True,
+        editable=False,
+        verbose_name='Токен подтверждения email',
     )
 
 
