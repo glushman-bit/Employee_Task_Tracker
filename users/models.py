@@ -14,16 +14,10 @@ class User(AbstractUser):
         help_text='Введите Email',
     )
     phone_number = PhoneNumberField(
-        unique=True,
         blank=True,
         null=True,
         verbose_name='Phone Number',
         help_text='Введите номер телефона',
-    )
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name='Created at',
-        help_text='Дата создания',
     )
     email_verification_token = models.UUIDField(
         default=uuid.uuid4,
