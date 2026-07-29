@@ -111,8 +111,8 @@ REST_FRAMEWORK = {
     ],
     'DATETIME_FORMAT': '%d.%m.%Y %H:%M',
     # Пагинация на уровне проекта
-    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    # 'PAGE_SIZE': 10,
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 6,
 }
 
 SIMPLE_JWT = {
