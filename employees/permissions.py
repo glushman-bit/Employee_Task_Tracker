@@ -1,15 +1,16 @@
+from django.contrib.auth.models import PermissionsMixin
 from rest_framework.permissions import BasePermission
 
 
-class IsProfile(BasePermission):
+class IsOwner(BasePermission):
     """Проверка, что пользователь является владельцем."""
 
-    message = "Это не ваш профиль."
+    message = "Вы не являетесь владельцем."
 
     def has_object_permission(self, request, view, obj):
         """Метод проверки владельца."""
 
-        if obj == request.user:
+        if obj.owner == request.user:
             return True
 
         return False
