@@ -1,5 +1,7 @@
+from rest_framework.exceptions import ValidationError
+from rest_framework.fields import IntegerField
 from rest_framework.serializers import ModelSerializer
-from employees.models import Employee
+from employees.models import Employee, Task
 
 
 class EmployeeSerializer(ModelSerializer):
@@ -7,7 +9,7 @@ class EmployeeSerializer(ModelSerializer):
 
     class Meta:
         model = Employee
-        fields = ('full_name', 'position', 'status', 'phone_number', 'email',)
+        fields = ('id', 'full_name', 'position', 'status', 'phone_number', 'email',)
 
 
 class EmployeeCreateSerializer(ModelSerializer):
@@ -16,3 +18,92 @@ class EmployeeCreateSerializer(ModelSerializer):
     class Meta:
         model = Employee
         fields = ('first_name', 'second_name', 'middle_name', 'position', 'status', 'phone_number', 'email',)
+
+
+class ParentTaskSerializer(ModelSerializer):
+    """Класс вывода родительской задачи."""
+
+    class Meta:
+        model = Task
+        fields = ('id', 'title', 'description', 'status', 'priority',)
+
+
+class TaskSerializer(ModelSerializer):
+    """Сериалайзер вывода задач."""
+
+    performer = EmployeeSerializer(read_only=True)
+    parent_task = ParentTaskSerializer(read_only=True)
+
+    class Meta:
+        model = Task
+        fields = ('id', 'title', 'description', 'parent_task', 'status', 'performer', 'deadline', 'priority',)
+
+
+class TaskCreateSerializer(ModelSerializer):
+    """Сериализатор создания задач."""
+
+    class Meta:
+        model = Task
+        fields = ('title', 'description', 'parent_task', 'performer', 'deadline', 'priority',)
+
+    def __init__(self, *args, **kwargs):
+        """Инициализирует сериализатор и ограничивает доступный список исполнителей и задач."""
+
+        super().__init__(*args, **kwargs)
+        request = self.context.get('request')
+
+        if request:
+            self.fields['performer'].queryset = Employee.objects.filter(
+                owner=request.user,
+            )
+
+            self.fields['parent_task'].queryset = Task.objects.filter(
+                owner=request.user,
+            )
+
+    def validate_performer(self, employee):
+        """Проверка статуса сотрудника."""
+
+        if employee.status != Employee.STATUS_AT_WORK:
+            raise ValidationError(
+                "Нельзя назначить задачу сотруднику, который сейчас не находится на работе."
+            )
+
+        return employee
+
+
+class StatisticTasksSerializer(ModelSerializer):
+    """Сериализатор вывода статистики по задачам."""
+
+    class Meta:
+        model = Task
+        fields = ('id', 'title', 'status', 'deadline', 'priority',)
+
+
+class StatisticSerializer(ModelSerializer):
+    """Сериалайзер вывода статистики."""
+
+    tasks = StatisticTasksSerializer(many=True, read_only=True)
+    active_tasks = IntegerField(read_only=True)
+
+    class Meta:
+        model = Employee
+        fields = (
+            "id",
+            "full_name",
+            "active_tasks",
+            "tasks",
+        )
+
+
+class StatisticEmployeesSerializer(ModelSerializer):
+    """Сериалайзер вывода статистики по сотрудникам."""
+
+    class Meta:
+        model = Employee
+        fields = (
+            "id",
+            "full_name",
+            "position",
+            "status",
+        )
