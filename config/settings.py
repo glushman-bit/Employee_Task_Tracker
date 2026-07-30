@@ -109,7 +109,8 @@ REST_FRAMEWORK = {
         # 'rest_framework.permissions.AllowAny', # Доступ всем
         'rest_framework.permissions.IsAuthenticated',  # Доступ только авторизованным
     ],
-    'DATETIME_FORMAT': '%d.%m.%Y %H:%M',
+    'DATETIME_FORMAT': '%Y.%m.%d %H:%M',
+    'DATETIME_INPUT_FORMATS': ['%Y.%m.%d %H:%M', 'iso-8601'],
     # Пагинация на уровне проекта
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 6,
