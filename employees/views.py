@@ -1,9 +1,15 @@
+from django.db.models import Count, Q, Prefetch
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
 from employees.models import Employee, Task
-from employees.serializers import EmployeeSerializer, EmployeeCreateSerializer, TaskSerializer, TaskCreateSerializer
+from employees.serializers import (EmployeeSerializer,
+                                   EmployeeCreateSerializer,
+                                   TaskSerializer,
+                                   TaskCreateSerializer,
+                                   StatisticSerializer,
+                                   StatisticEmployeesSerializer,)
 
 
 class EmployeeViewSet(ModelViewSet):
@@ -58,11 +64,83 @@ class TaskViewSet(ModelViewSet):
 
 
 class StatisticsAPIView(APIView):
-    """Класс вывода статистики."""
+    """Класс вывода статистики по количеству сотрудников."""
+
+    def get_employees_at_work(self, request):
+        """Количество сотрудников."""
+
+        employees = request.user.employees.filter(
+            status=Employee.STATUS_AT_WORK
+        )
+
+        serializer = StatisticEmployeesSerializer(employees, many=True)
+
+        return {
+        "Количество сотрудников на работе": employees.count(),
+        "Данные о сотрудниках": serializer.data,
+        }
+
+
+    def get_employee_off(self, request):
+        """Количество сотрудников не на работе."""
+
+        employees = request.user.employees.filter(
+            status__in=[Employee.STATUS_VOCATION, Employee.STATUS_SICK_LEAVE, Employee.STATUS_DAY_OFF]
+        )
+
+        serializer = StatisticEmployeesSerializer(employees, many=True)
+
+        return {
+        "Количество сотрудников не на работе": employees.count(),
+        "Данные о сотрудниках": serializer.data,
+        }
 
     def get(self, request):
         """Вывод количества сотрудников по руководителю."""
 
         return Response({
-            'employees_count': request.user.employees.count(),
+            'Общее количество сотрудников': request.user.employees.count(),
+            'Сотрудники на работе': self.get_employees_at_work(request),
+            'Отсутствуют': self.get_employee_off(request),
+
+        })
+
+
+class EmployeeWorkloadAPIView(APIView):
+    """Запрашивает из БД список сотрудников и их задачи, отсортированный по количеству активных задач."""
+
+    def get_employee_workload(self, request):
+
+        employees = Employee.objects.filter(
+            owner=request.user,
+        ).annotate(
+            active_tasks=Count(
+                'tasks', filter=Q(
+                    tasks__status__in=[
+                        Task.STATUS_CREATED,
+                        Task.STATUS_RUNNING
+                    ]
+                )
+            )
+        ).prefetch_related(
+            Prefetch(
+                'tasks',
+                queryset=Task.objects.filter(
+                    status__in=[
+                        Task.STATUS_CREATED,
+                        Task.STATUS_RUNNING
+                    ]
+                )
+            )
+        )
+
+        serializer = StatisticSerializer(employees, many=True)
+
+        return serializer.data
+
+    def get(self, request):
+        """Вывод статистики."""
+
+        return Response({
+            'employee_workload': self.get_employee_workload(request),
         })
