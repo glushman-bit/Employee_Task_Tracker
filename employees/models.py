@@ -51,7 +51,7 @@ class Employee(models.Model):
     )
     email = models.EmailField(
         unique=True,
-        verbose_name="Email пользователя",
+        verbose_name="Email сотрудника",
         help_text="Укажите Email",
     )
     status = models.CharField(
@@ -76,7 +76,7 @@ class Employee(models.Model):
     def full_name(self):
         """Собираем ФИО в одну строку."""
 
-        name_list = [self.first_name, self.middle_name, self.second_name]
+        name_list = [self.second_name, self.first_name, self.middle_name]
         result = " ".join(filter(None, name_list)).strip()
 
         return result if result else 'ФИО не указано'
