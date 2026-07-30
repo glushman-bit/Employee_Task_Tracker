@@ -106,8 +106,8 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny', # Доступ всем
-        # 'rest_framework.permissions.IsAuthenticated',  # Доступ только авторизованным
+        # 'rest_framework.permissions.AllowAny', # Доступ всем
+        'rest_framework.permissions.IsAuthenticated',  # Доступ только авторизованным
     ],
     'DATETIME_FORMAT': '%d.%m.%Y %H:%M',
     # Пагинация на уровне проекта
