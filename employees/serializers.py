@@ -1,7 +1,8 @@
 from rest_framework.exceptions import ValidationError
-from rest_framework.fields import IntegerField, SerializerMethodField
+from rest_framework.fields import IntegerField, SerializerMethodField, CharField
 from rest_framework.serializers import ModelSerializer
 from employees.models import Employee, Task
+from django.utils import timezone
 
 
 class EmployeeSerializer(ModelSerializer):
@@ -79,6 +80,8 @@ class TaskCreateSerializer(ModelSerializer):
                 {'deadline': 'Срок выполнения не может быть раньше текущего времени.'}
             )
 
+        return value
+
 
 class StatisticTasksSerializer(ModelSerializer):
     """Сериализатор вывода статистики по задачам."""
@@ -132,3 +135,14 @@ class SubtasksRunningSerializer(ModelSerializer):
         )
 
         return TaskShortSerializer(tasks, many=True).data
+
+
+class AvailableEmployeesAtWorkSerializer(ModelSerializer):
+    """Сериалайзер вывода загруженности сотрудников."""
+
+    tasks_count = IntegerField(read_only=True)
+    reason = CharField(read_only=True)
+
+    class Meta:
+        model = Employee
+        fields = ('id', 'full_name', 'position', 'tasks_count', 'reason', 'email',)

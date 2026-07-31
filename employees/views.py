@@ -1,4 +1,3 @@
-
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
@@ -7,8 +6,10 @@ from employees.models import Employee, Task
 from employees.serializers import (EmployeeSerializer,
                                    EmployeeCreateSerializer,
                                    TaskSerializer,
-                                   TaskCreateSerializer,)
-from employees.services import StatisticsService
+                                   TaskCreateSerializer,
+                                   AvailableEmployeesAtWorkSerializer,)
+from employees.services import StatisticsService, EmployeesSearchService
+
 
 
 class EmployeeViewSet(ModelViewSet):
@@ -16,6 +17,9 @@ class EmployeeViewSet(ModelViewSet):
 
     def get_serializer_class(self):
         """Переопределение сериалайзера в зависимости от действия."""
+
+        if self.request.query_params.get('task_id') is not None:
+            return AvailableEmployeesAtWorkSerializer
 
         if self.action in ['create', 'update', 'partial_update']:
             return EmployeeCreateSerializer
@@ -28,8 +32,14 @@ class EmployeeViewSet(ModelViewSet):
         if not self.request.user.is_authenticated:
             return Employee.objects.none()
 
-        return Employee.objects.filter(owner=self.request.user)
+        task_id = self.request.query_params.get('task_id', None)
 
+        if task_id:
+            service = EmployeesSearchService(self.request.user)
+
+            return service.get_available_employees_at_work(task_id)
+
+        return Employee.objects.filter(owner=self.request.user)
 
     def perform_create(self, serializer):
         """Автоматическая установка руководителя при создании."""
@@ -102,5 +112,3 @@ class StatisticsTasksWithSubtasks(APIView):
         return Response({
             'Не взятые в работу задачи, от которых зависят выполняемые': service.get_task_in_created_with_subtasks_in_running(),
         })
-
-

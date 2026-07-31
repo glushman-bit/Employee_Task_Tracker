@@ -1,6 +1,7 @@
-from .serializers import StatisticEmployeesSerializer, StatisticSerializer, SubtasksRunningSerializer
+from .serializers import StatisticEmployeesSerializer, StatisticSerializer, AvailableEmployeesAtWorkSerializer, SubtasksRunningSerializer
 from .models import Employee, Task
-from django.db.models import Count, Q, Prefetch
+from django.db.models import Count, Q, Prefetch, Min, Case, When, Value, CharField
+from rest_framework.generics import get_object_or_404
 
 
 class StatisticsService:
@@ -76,7 +77,6 @@ class StatisticsService:
             Task.objects.filter(
                 owner=self.user,
                 status=Task.STATUS_CREATED,
-                # parent_task__status=Task.STATUS_RUNNING,
                 subtasks__status=Task.STATUS_RUNNING,
             ).distinct()
         )
@@ -87,3 +87,63 @@ class StatisticsService:
             "Количество задач": tasks.count(),
             "Задачи": serializer.data,
         }
+
+
+class EmployeesSearchService:
+    """Класс подбора сотрудников для выполнения задач."""
+
+    def __init__(self, user):
+        """Передача пользователя в конструктор."""
+
+        self.user = user
+
+    def get_available_employees_at_work(self, task_id):
+        """Получение списка сотрудников, которые могут взять работы на исполнение.
+           Выполняет поиск по наименее загруженным сотрудникам или сотруднику, выполняющему родительскую задачу,
+           если ему назначено максимум на 2 задачи больше, чем у наименее загруженного сотрудника."""
+
+        queryset = Employee.objects.filter(
+            owner=self.user,
+            status=Employee.STATUS_AT_WORK,
+        ).annotate(
+            tasks_count=Count(
+                'tasks',
+                filter=Q(tasks__status=Task.STATUS_RUNNING)
+            )
+        )
+
+        task = get_object_or_404(Task, pk=task_id, owner=self.user)
+
+        min_count = queryset.aggregate(min_count=Min('tasks_count'))['min_count']
+
+        parent_employee_id = None
+
+        if task.parent_task:
+            parent_employee_id = task.parent_task.performer_id
+
+        queryset = queryset.annotate(
+            reason=Case(
+                When(
+                    id=parent_employee_id,
+                    tasks_count__lte=min_count + 2,
+                    then=Value("Исполнитель родительской задачи")
+                ),
+                When(
+                    tasks_count=min_count,
+                    then=Value("Минимальная загрузка")
+                ),
+                output_field=CharField(),
+            )
+        )
+
+        available_employees  = queryset.filter(
+            Q(tasks_count=min_count)
+            |
+            Q(
+                id=parent_employee_id,
+                tasks_count__lte=min_count + 2,
+            )
+        ).order_by('tasks_count')
+
+
+        return available_employees
