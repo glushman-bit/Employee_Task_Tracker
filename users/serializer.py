@@ -9,7 +9,7 @@ class UserSerializer(ModelSerializer):
     
     class Meta:
         model = User
-        fields = ('id', 'email', 'phone_number', 'created_at',)
+        fields = ('id', 'email', 'phone_number', 'date_joined',)
         extra_kwargs = {'id': {'read_only': True}}
 
     def to_representation(self, instance):

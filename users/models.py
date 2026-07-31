@@ -21,6 +21,8 @@ class User(AbstractUser):
     )
     email_verification_token = models.UUIDField(
         default=uuid.uuid4,
+        blank=True,
+        null=True,
         unique=True,
         editable=False,
         verbose_name='Токен подтверждения email',

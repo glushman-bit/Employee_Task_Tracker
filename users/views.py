@@ -1,3 +1,4 @@
+from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.generics import CreateAPIView, get_object_or_404
 from rest_framework.response import Response
@@ -34,9 +35,15 @@ class UserCreateAPIView(CreateAPIView):
 class VerificationEmailView(APIView):
     """Подтверждение электронной почты."""
 
-    def get(self, token):
+    permission_classes = [AllowAny]
+
+    def get(self, request, token):
         user = get_object_or_404(User, email_verification_token=token)
         user.is_active = True
+        user.email_verification_token = None
         user.save()
 
-        return Response({'message': 'Email успешно подтвержден'})
+        return Response(
+            {'message': 'Email успешно подтвержден'},
+            status=status.HTTP_200_OK,
+        )
