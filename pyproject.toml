@@ -14,7 +14,8 @@ python-dotenv = "^1.2.2"
 psycopg = {extras = ["binary"], version = "^3.3.4"}
 django-phonenumber-field = {extras = ["phonenumbers"], version = "^8.5.0"}
 pillow = "^12.3.0"
-ipython = "^9.15.0"
+ipython = "==9.16.0"
+pytest-cov = "^7.1.0"
 
 
 [tool.poetry.group.lint.dependencies]
