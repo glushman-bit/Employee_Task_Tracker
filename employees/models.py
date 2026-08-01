@@ -98,9 +98,9 @@ class Task(models.Model):
         (STATUS_COMPLETED, 'Завершена'),
     ]
 
-    PRIORITY_LOW = 'low'
-    PRIORITY_MEDIUM = 'medium'
-    PRIORITY_HIGH = 'high'
+    PRIORITY_LOW = 'Низкий'
+    PRIORITY_MEDIUM = 'Средний'
+    PRIORITY_HIGH = 'Высокий'
 
     PRIORITY_CHOICES = [
         (PRIORITY_LOW, 'Низкий'),
