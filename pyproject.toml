@@ -16,13 +16,14 @@ django-phonenumber-field = {extras = ["phonenumbers"], version = "^8.5.0"}
 pillow = "^12.3.0"
 ipython = "==9.16.0"
 pytest-cov = "^7.1.0"
+django-filter = "^26.1"
 
 
 [tool.poetry.group.lint.dependencies]
-isort = "^8.0.1"
 black = "^26.5.1"
 flake8 = "^7.3.0"
 mypy = "^2.3.0"
+isort = "^8.0.1"
 
 [build-system]
 requires = ["poetry-core"]

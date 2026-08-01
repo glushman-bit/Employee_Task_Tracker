@@ -1,19 +1,28 @@
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import OrderingFilter
 from rest_framework.response import Response
+from rest_framework.serializers import IntegerField, Serializer
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
 from employees.models import Employee, Task
-from employees.serializers import (EmployeeSerializer,
-                                   EmployeeCreateSerializer,
-                                   TaskSerializer,
-                                   TaskCreateSerializer,
-                                   AvailableEmployeesAtWorkSerializer,)
-from employees.services import StatisticsService, EmployeesSearchService
-
+from employees.serializers import (
+    AvailableEmployeesAtWorkSerializer,
+    EmployeeCreateSerializer,
+    EmployeeSerializer,
+    TaskCreateSerializer,
+    TaskSerializer,
+)
+from employees.services import EmployeesSearchService, ImportantTaskService, StatisticsService
 
 
 class EmployeeViewSet(ModelViewSet):
     """Класс работы с сотрудниками."""
+
+    filter_backends = [DjangoFilterBackend, OrderingFilter,]
+    ordering_fields = ['id', 'position',]
+    filterset_fields = ['second_name', 'status', 'position',]
+    ordering = ['id',]
 
     def get_serializer_class(self):
         """Переопределение сериалайзера в зависимости от действия."""
@@ -32,7 +41,10 @@ class EmployeeViewSet(ModelViewSet):
         if not self.request.user.is_authenticated:
             return Employee.objects.none()
 
-        task_id = self.request.query_params.get('task_id', None)
+        serializer = TaskQueryParamSerializer(data=self.request.query_params)
+        serializer.is_valid(raise_exception=True)
+        validated_data = serializer.validated_data
+        task_id = validated_data.get('task_id', None)
 
         if task_id:
             service = EmployeesSearchService(self.request.user)
@@ -47,8 +59,19 @@ class EmployeeViewSet(ModelViewSet):
         serializer.save(owner=self.request.user)
 
 
+class TaskQueryParamSerializer(Serializer):
+    """Сериализатор валидации поля task_id. Проверяем, что это число."""
+
+    task_id = IntegerField(required=False)
+
+
 class TaskViewSet(ModelViewSet):
     """Класс для работы с задачами."""
+
+    filter_backends = [DjangoFilterBackend, OrderingFilter,]
+    ordering_fields = ['id', 'deadline', 'priority']
+    filterset_fields = ['status', 'performer', 'parent_task',]
+    ordering = ['id', ]
 
     def get_serializer_class(self):
         """Переопределение сериалайзера в зависимости от действия."""
@@ -84,7 +107,6 @@ class StatisticsEmployeesAPIView(APIView):
             'Общее количество сотрудников': request.user.employees.count(),
             'Сотрудники на работе': service.get_employees_at_work(),
             'Отсутствуют': service.get_employee_off(),
-
         })
 
 
@@ -107,8 +129,21 @@ class StatisticsTasksWithSubtasks(APIView):
     def get(self, request):
         """Вывод статистики."""
 
-        service = StatisticsService(request.user)
+        service = ImportantTaskService(request.user)
 
         return Response({
             'Не взятые в работу задачи, от которых зависят выполняемые': service.get_task_in_created_with_subtasks_in_running(),
         })
+
+
+class ImportantTasksAPIView(APIView):
+    """Вывод важных задач и рекомендуемых исполнителей."""
+
+    def get(self, request):
+        """Получение данных."""
+
+        service = ImportantTaskService(request.user)
+
+        tasks = service.get_important_tasks()
+
+        return Response(tasks)
