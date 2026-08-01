@@ -118,7 +118,7 @@ class Task(models.Model):
     )
     parent_task = models.ForeignKey(
         'self',
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         blank=True,
         null=True,
         related_name='subtasks',
@@ -126,7 +126,9 @@ class Task(models.Model):
     )
     performer = models.ForeignKey(
         Employee,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
         related_name='tasks',
         verbose_name='Исполнитель задачи',
 
@@ -172,7 +174,9 @@ class Task(models.Model):
         verbose_name_plural = 'Задачи'
 
     def __str__(self):
-        return f'{self.title} выполняет {self.performer}, выполнение: {self.deadline}'
+        if self.performer:
+            return f"{self.title} ({self.performer})"
+        return f"{self.title} (исполнитель не назначен)"
 
     @property
     def is_overdue(self):
@@ -184,7 +188,7 @@ class Task(models.Model):
         )
 
     def save(self, *args, **kwargs):
-        """Автоматическое изменение статуса задачи на "Завершена"."""
+        """Автоматическая установка времени завершения задачи при установке статуса STATUS_COMPLETED."""
 
         if self.status == self.STATUS_COMPLETED:
             if self.completed_at is None:
