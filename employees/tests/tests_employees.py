@@ -1,59 +1,9 @@
-from datetime import timedelta
-
 from django.urls import reverse
-from django.utils import timezone
 from rest_framework import status
-from rest_framework.exceptions import ValidationError
-from rest_framework.test import APITestCase
 
 from employees.models import Employee, Task
 from users.models import User
-
-
-class EmployeesTasksSetUp(APITestCase):
-    """Базовый класс подготовки тестов."""
-
-    def setUp(self):
-
-        self.user = User.objects.create(email='user1@test.pro')
-        self.employee1 = Employee.objects.create(
-            first_name='Иван',
-            second_name='Пронин',
-            middle_name='',
-            position='IТ Прогер',
-            status='На работе',
-            phone_number='',
-            email='test_Pronin@sky.pro',
-            owner=self.user,
-        )
-        self.employee2 = Employee.objects.create(
-            first_name='Артем',
-            second_name='Павлов',
-            middle_name='',
-            position='Тестировщик',
-            status='На работе',
-            phone_number='+79001234567',
-            email='test_Pavlov@sky.pro',
-            owner=self.user,
-        )
-        self.task1 = Task.objects.create(
-            title='Тест_1',
-            description='Тестирование',
-            parent_task=None,
-            performer=None,
-            status=Task.STATUS_CREATED,
-            deadline=timezone.now() + timedelta(days=2),
-            owner=self.user,
-        )
-        self.task2 = Task.objects.create(
-            title='Тест_2',
-            description='',
-            parent_task=self.task1,
-            performer=self.employee1,
-            status=Task.STATUS_RUNNING,
-            deadline=timezone.now() + timedelta(days=2),
-            owner=self.user,
-        )
+from .base_setup import EmployeesTasksSetUp
 
 
 class EmployeesTest(EmployeesTasksSetUp):
@@ -96,7 +46,7 @@ class EmployeesTest(EmployeesTasksSetUp):
         response = self.client.patch(url, data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(data.get('first_name'), 'Петр')
+        self.assertEqual(response.data['first_name'], 'Петр')
 
     def test_retrieve_employee(self):
         """Тест на просмотр сотрудника. Проверка поля full_name."""
@@ -130,7 +80,7 @@ class EmployeesTest(EmployeesTasksSetUp):
         self.assertEqual(response.data['next'], None)
         self.assertEqual(response.data['previous'], None)
 
-    def test_not_view_list_without_authenticate(self):
+    def test_not_view_list_employees_without_authenticate(self):
         """Тест невозможности просмотра списка сотрудников неавторизованному пользователю."""
 
         url = reverse('employees:employee-list')
@@ -139,3 +89,47 @@ class EmployeesTest(EmployeesTasksSetUp):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(response.json().get('detail'), 'Учетные данные не были предоставлены.')
 
+    def test_user_cannot_see_other_user_employees(self):
+        """Проверка изоляции сотрудников между пользователями."""
+
+        other_user = User.objects.create(email='user2@test.pro')
+
+        other_employee = Employee.objects.create(
+            first_name='Петр',
+            second_name='Иванов',
+            middle_name='',
+            position='Разработчик',
+            status=Employee.STATUS_AT_WORK,
+            email='test@test.pro',
+            owner=other_user,
+        )
+
+        url = reverse('employees:employee-list')
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(url)
+
+        employee_id = [
+            employee['id']
+            for employee in response.data['results']
+        ]
+
+        self.assertNotIn(other_employee.id, employee_id)
+
+    def test_views_employees_at_work(self):
+        """Тест вывода данных о сотрудниках на работе."""
+
+        url = reverse('employees:statistics-employees')
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['Общее количество сотрудников'], Employee.objects.count())
+
+    def test_views_employees_workload(self):
+        """Тест вывода данных о занятости сотрудников."""
+
+        url = reverse('employees:statistics-workload')
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
