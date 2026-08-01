@@ -7,9 +7,18 @@ from employees.models import Employee, Task
 class EmployeeAdmin(admin.ModelAdmin):
     """Административная панель для сотрудников."""
 
-    list_display = ('id', 'full_name', 'position', 'owner', 'status',)
+    list_display = (
+        'id',
+        'full_name',
+        'position',
+        'owner',
+        'status',
+    )
     search_fields = ('owner',)
-    list_filter = ('owner', 'position',)
+    list_filter = (
+        'owner',
+        'position',
+    )
     ordering = ('position',)
 
 
@@ -17,6 +26,24 @@ class EmployeeAdmin(admin.ModelAdmin):
 class TaskAdmin(admin.ModelAdmin):
     """Административная панель для задач."""
 
-    list_display = ('id', 'title', 'description', 'performer', 'deadline', 'status', 'created_at', 'owner', 'updated_at',)
-    search_fields = ('title', 'performer', 'owner',)
-    list_filter = ('title', 'performer', 'owner',)
+    list_display = (
+        'id',
+        'title',
+        'description',
+        'performer',
+        'deadline',
+        'status',
+        'created_at',
+        'owner',
+        'updated_at',
+    )
+    search_fields = (
+        'title',
+        'performer',
+        'owner',
+    )
+    list_filter = (
+        'title',
+        'performer',
+        'owner',
+    )

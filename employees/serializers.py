@@ -11,7 +11,14 @@ class EmployeeSerializer(ModelSerializer):
 
     class Meta:
         model = Employee
-        fields = ('id', 'full_name', 'position', 'status', 'phone_number', 'email',)
+        fields = (
+            'id',
+            'full_name',
+            'position',
+            'status',
+            'phone_number',
+            'email',
+        )
 
 
 class EmployeeCreateSerializer(ModelSerializer):
@@ -19,7 +26,15 @@ class EmployeeCreateSerializer(ModelSerializer):
 
     class Meta:
         model = Employee
-        fields = ('first_name', 'second_name', 'middle_name', 'position', 'status', 'phone_number', 'email',)
+        fields = (
+            'first_name',
+            'second_name',
+            'middle_name',
+            'position',
+            'status',
+            'phone_number',
+            'email',
+        )
 
 
 class ParentTaskSerializer(ModelSerializer):
@@ -27,7 +42,13 @@ class ParentTaskSerializer(ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ('id', 'title', 'description', 'status', 'priority',)
+        fields = (
+            'id',
+            'title',
+            'description',
+            'status',
+            'priority',
+        )
 
 
 class TaskSerializer(ModelSerializer):
@@ -38,7 +59,18 @@ class TaskSerializer(ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ('id', 'title', 'description', 'parent_task', 'status', 'performer', 'deadline', 'priority', 'is_overdue', 'completed_at',)
+        fields = (
+            'id',
+            'title',
+            'description',
+            'parent_task',
+            'status',
+            'performer',
+            'deadline',
+            'priority',
+            'is_overdue',
+            'completed_at',
+        )
 
 
 class TaskCreateSerializer(ModelSerializer):
@@ -46,7 +78,16 @@ class TaskCreateSerializer(ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ('title', 'description', 'parent_task', 'performer', 'deadline', 'priority', 'status', 'completed_at',)
+        fields = (
+            'title',
+            'description',
+            'parent_task',
+            'performer',
+            'deadline',
+            'priority',
+            'status',
+            'completed_at',
+        )
 
     def __init__(self, *args, **kwargs):
         """Инициализирует сериализатор и ограничивает доступный список исполнителей и задач."""
@@ -70,9 +111,7 @@ class TaskCreateSerializer(ModelSerializer):
             return employee
 
         if employee.status != Employee.STATUS_AT_WORK:
-            raise ValidationError(
-                "Нельзя назначить задачу сотруднику, который сейчас не находится на работе."
-            )
+            raise ValidationError("Нельзя назначить задачу сотруднику, который сейчас не находится на работе.")
 
         return employee
 
@@ -80,9 +119,7 @@ class TaskCreateSerializer(ModelSerializer):
         """Проверка, что срок выполнения не находится в прошлом."""
 
         if value < timezone.now():
-            raise ValidationError(
-                {'deadline': 'Срок выполнения не может быть раньше текущего времени.'}
-            )
+            raise ValidationError({'deadline': 'Срок выполнения не может быть раньше текущего времени.'})
 
         return value
 
@@ -92,7 +129,13 @@ class StatisticTasksSerializer(ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ('id', 'title', 'status', 'deadline', 'priority',)
+        fields = (
+            'id',
+            'title',
+            'status',
+            'deadline',
+            'priority',
+        )
 
 
 class StatisticSerializer(ModelSerializer):
@@ -103,7 +146,12 @@ class StatisticSerializer(ModelSerializer):
 
     class Meta:
         model = Employee
-        fields = ('id', 'full_name', 'active_tasks', 'tasks',)
+        fields = (
+            'id',
+            'full_name',
+            'active_tasks',
+            'tasks',
+        )
 
 
 class StatisticEmployeesSerializer(ModelSerializer):
@@ -111,7 +159,12 @@ class StatisticEmployeesSerializer(ModelSerializer):
 
     class Meta:
         model = Employee
-        fields = ('id', 'full_name', 'position', 'status',)
+        fields = (
+            'id',
+            'full_name',
+            'position',
+            'status',
+        )
 
 
 class TaskShortSerializer(ModelSerializer):
@@ -119,7 +172,12 @@ class TaskShortSerializer(ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ('id', 'title', 'status', 'priority',)
+        fields = (
+            'id',
+            'title',
+            'status',
+            'priority',
+        )
 
 
 class SubtasksRunningSerializer(ModelSerializer):
@@ -129,14 +187,17 @@ class SubtasksRunningSerializer(ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ('id', 'title', 'status', 'running_subtasks',)
+        fields = (
+            'id',
+            'title',
+            'status',
+            'running_subtasks',
+        )
 
     def get_running_subtasks(self, obj):
         """Реализация поля 'running_subtasks'."""
 
-        tasks = obj.subtasks.filter(
-            status=Task.STATUS_RUNNING
-        )
+        tasks = obj.subtasks.filter(status=Task.STATUS_RUNNING)
 
         return TaskShortSerializer(tasks, many=True).data
 
@@ -149,4 +210,11 @@ class AvailableEmployeesAtWorkSerializer(ModelSerializer):
 
     class Meta:
         model = Employee
-        fields = ('id', 'full_name', 'position', 'tasks_count', 'reason', 'email',)
+        fields = (
+            'id',
+            'full_name',
+            'position',
+            'tasks_count',
+            'reason',
+            'email',
+        )

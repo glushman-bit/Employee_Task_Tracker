@@ -3,10 +3,9 @@ from datetime import timedelta
 from django.urls import reverse
 from django.utils import timezone
 from rest_framework import status
-from rest_framework.test import APITestCase
 
-from employees.models import Employee, Task
-from users.models import User
+from employees.models import Task
+
 from .base_setup import EmployeesTasksSetUp
 
 
@@ -61,7 +60,7 @@ class TaskModelTest(EmployeesTasksSetUp):
         """Тест невозможности создать задачу с прошедшим сроком."""
 
         url = reverse('employees:task-list')
-        data ={
+        data = {
             'title': 'Просроченная задача',
             'status': Task.STATUS_CREATED,
             'deadline': timezone.now() - timedelta(days=1),
@@ -70,7 +69,4 @@ class TaskModelTest(EmployeesTasksSetUp):
         response = self.client.post(url, data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn(
-            'Срок выполнения не может быть раньше текущего времени.',
-            str(response.data)
-        )
+        self.assertIn('Срок выполнения не может быть раньше текущего времени.', str(response.data))

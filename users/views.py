@@ -1,12 +1,13 @@
 from rest_framework import status
-from rest_framework.permissions import AllowAny
 from rest_framework.generics import CreateAPIView, get_object_or_404
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
-from .serializer import UserSerializer, UserCreateSerializer
 
 from users.models import User
+
+from .serializer import UserCreateSerializer, UserSerializer
 
 
 class UserViewSet(ModelViewSet):
@@ -16,8 +17,8 @@ class UserViewSet(ModelViewSet):
 
     def get_queryset(self):
         """Получение прав доступа для изменения профиля пользователя.
-            Пользователь может видеть и редактировать только себя,
-            Администратор может видеть и редактировать всех."""
+        Пользователь может видеть и редактировать только себя,
+        Администратор может видеть и редактировать всех."""
 
         if self.request.user.is_staff:
             return User.objects.all()

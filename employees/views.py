@@ -19,10 +19,22 @@ from employees.services import EmployeesSearchService, ImportantTaskService, Sta
 class EmployeeViewSet(ModelViewSet):
     """Класс работы с сотрудниками."""
 
-    filter_backends = [DjangoFilterBackend, OrderingFilter,]
-    ordering_fields = ['id', 'position',]
-    filterset_fields = ['second_name', 'status', 'position',]
-    ordering = ['id',]
+    filter_backends = [
+        DjangoFilterBackend,
+        OrderingFilter,
+    ]
+    ordering_fields = [
+        'id',
+        'position',
+    ]
+    filterset_fields = [
+        'second_name',
+        'status',
+        'position',
+    ]
+    ordering = [
+        'id',
+    ]
 
     def get_serializer_class(self):
         """Переопределение сериалайзера в зависимости от действия."""
@@ -68,10 +80,19 @@ class TaskQueryParamSerializer(Serializer):
 class TaskViewSet(ModelViewSet):
     """Класс для работы с задачами."""
 
-    filter_backends = [DjangoFilterBackend, OrderingFilter,]
+    filter_backends = [
+        DjangoFilterBackend,
+        OrderingFilter,
+    ]
     ordering_fields = ['id', 'deadline', 'priority']
-    filterset_fields = ['status', 'performer', 'parent_task',]
-    ordering = ['id', ]
+    filterset_fields = [
+        'status',
+        'performer',
+        'parent_task',
+    ]
+    ordering = [
+        'id',
+    ]
 
     def get_serializer_class(self):
         """Переопределение сериалайзера в зависимости от действия."""
@@ -103,11 +124,13 @@ class StatisticsEmployeesAPIView(APIView):
 
         service = StatisticsService(request.user)
 
-        return Response({
-            'Общее количество сотрудников': request.user.employees.count(),
-            'Сотрудники на работе': service.get_employees_at_work(),
-            'Отсутствуют': service.get_employee_off(),
-        })
+        return Response(
+            {
+                'Общее количество сотрудников': request.user.employees.count(),
+                'Сотрудники на работе': service.get_employees_at_work(),
+                'Отсутствуют': service.get_employee_off(),
+            }
+        )
 
 
 class StatisticsEmployeeWorkloadAPIView(APIView):
@@ -118,9 +141,11 @@ class StatisticsEmployeeWorkloadAPIView(APIView):
 
         service = StatisticsService(request.user)
 
-        return Response({
-            'Занятые сотрудники': service.get_employee_workload(),
-        })
+        return Response(
+            {
+                'Занятые сотрудники': service.get_employee_workload(),
+            }
+        )
 
 
 class StatisticsTasksWithSubtasks(APIView):
@@ -131,9 +156,12 @@ class StatisticsTasksWithSubtasks(APIView):
 
         service = ImportantTaskService(request.user)
 
-        return Response({
-            'Не взятые в работу задачи, от которых зависят выполняемые': service.get_task_in_created_with_subtasks_in_running(),
-        })
+        return Response(
+            {
+                'Не взятые в работу задачи, от которых зависят выполняемые':
+                    service.get_task_in_created_with_subtasks_in_running(),
+            }
+        )
 
 
 class ImportantTasksAPIView(APIView):
@@ -144,6 +172,4 @@ class ImportantTasksAPIView(APIView):
 
         service = ImportantTaskService(request.user)
 
-        tasks = service.get_important_tasks()
-
-        return Response(tasks)
+        return Response(service.get_important_tasks())

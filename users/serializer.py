@@ -6,10 +6,15 @@ from users.services import send_verification_email
 
 class UserSerializer(ModelSerializer):
     """Сериалайзер вывода данных о пользователях."""
-    
+
     class Meta:
         model = User
-        fields = ('id', 'email', 'phone_number', 'date_joined',)
+        fields = (
+            'id',
+            'email',
+            'phone_number',
+            'date_joined',
+        )
         extra_kwargs = {'id': {'read_only': True}}
 
     def to_representation(self, instance):
@@ -23,11 +28,13 @@ class UserSerializer(ModelSerializer):
         return representation
 
 
-
 class UserCreateSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = ('email', 'password',)
+        fields = (
+            'email',
+            'password',
+        )
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):

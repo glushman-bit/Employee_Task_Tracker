@@ -103,10 +103,7 @@ class UserTestCase(APITestCase):
             is_active=True,
         )
 
-        url = reverse(
-            'users:verify',
-            args=[user.email_verification_token]
-        )
+        url = reverse('users:verify', args=[user.email_verification_token])
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)

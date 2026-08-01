@@ -17,49 +17,20 @@ class Employee(models.Model):
         (STATUS_AT_WORK, 'На работе'),
         (STATUS_VOCATION, 'Отпуск'),
         (STATUS_SICK_LEAVE, 'Больничный'),
-        (STATUS_DAY_OFF, 'Выходной')
+        (STATUS_DAY_OFF, 'Выходной'),
     ]
 
-    first_name = models.CharField(
-        max_length=150,
-        blank=True,
-        verbose_name='Имя'
-    )
-    middle_name = models.CharField(
-        max_length=150,
-        blank=True,
-        default='',
-        verbose_name='Отчество'
-    )
-    second_name = models.CharField(
-        max_length=150,
-        blank=True,
-        default='',
-        verbose_name='Фамилия'
-    )
-    position = models.CharField(
-        max_length=150,
-        blank=True,
-        default='',
-        verbose_name='Должность'
-    )
-    phone_number = PhoneNumberField(
-        blank=True,
-        null=True,
-        verbose_name='Телефон',
-        help_text='Укажите номер телефона'
-    )
+    first_name = models.CharField(max_length=150, blank=True, verbose_name='Имя')
+    middle_name = models.CharField(max_length=150, blank=True, default='', verbose_name='Отчество')
+    second_name = models.CharField(max_length=150, blank=True, default='', verbose_name='Фамилия')
+    position = models.CharField(max_length=150, blank=True, default='', verbose_name='Должность')
+    phone_number = PhoneNumberField(blank=True, null=True, verbose_name='Телефон', help_text='Укажите номер телефона')
     email = models.EmailField(
         unique=True,
         verbose_name="Email сотрудника",
         help_text="Укажите Email",
     )
-    status = models.CharField(
-        max_length=15,
-        choices=CHOICES_STATUS,
-        default=STATUS_AT_WORK,
-        verbose_name='статус'
-    )
+    status = models.CharField(max_length=15, choices=CHOICES_STATUS, default=STATUS_AT_WORK, verbose_name='статус')
     owner = models.ForeignKey(
         AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -122,7 +93,7 @@ class Task(models.Model):
         blank=True,
         null=True,
         related_name='subtasks',
-        verbose_name='Связанная задача'
+        verbose_name='Связанная задача',
     )
     performer = models.ForeignKey(
         Employee,
@@ -131,31 +102,14 @@ class Task(models.Model):
         null=True,
         related_name='tasks',
         verbose_name='Исполнитель задачи',
-
     )
-    deadline = models.DateTimeField(
-        verbose_name='Срок выполнения',
-        help_text='Укажите дату и время завершения задачи'
-    )
+    deadline = models.DateTimeField(verbose_name='Срок выполнения', help_text='Укажите дату и время завершения задачи')
     status = models.CharField(
-        max_length=30,
-        choices=CHOICES_STATUS,
-        default=STATUS_CREATED,
-        verbose_name='Статус задачи'
+        max_length=30, choices=CHOICES_STATUS, default=STATUS_CREATED, verbose_name='Статус задачи'
     )
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name='Создана'
-    )
-    updated_at = models.DateTimeField(
-        auto_now=True,
-        verbose_name='Изменена'
-    )
-    completed_at = models.DateTimeField(
-        blank=True,
-        null=True,
-        verbose_name='Дата завершения'
-    )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Создана')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='Изменена')
+    completed_at = models.DateTimeField(blank=True, null=True, verbose_name='Дата завершения')
     owner = models.ForeignKey(
         AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -163,10 +117,7 @@ class Task(models.Model):
         verbose_name='Руководитель',
     )
     priority = models.CharField(
-        max_length=10,
-        choices=PRIORITY_CHOICES,
-        default=PRIORITY_MEDIUM,
-        verbose_name='Приоритет'
+        max_length=10, choices=PRIORITY_CHOICES, default=PRIORITY_MEDIUM, verbose_name='Приоритет'
     )
 
     class Meta:
@@ -182,10 +133,7 @@ class Task(models.Model):
     def is_overdue(self):
         """Определение статуса просроченного задания."""
 
-        return (
-            self.status != self.STATUS_COMPLETED
-            and self.deadline < timezone.now()
-        )
+        return self.status != self.STATUS_COMPLETED and self.deadline < timezone.now()
 
     def save(self, *args, **kwargs):
         """Автоматическая установка времени завершения задачи при установке статуса STATUS_COMPLETED."""

@@ -10,17 +10,34 @@ class UserAdmin(BaseUserAdmin):
 
     model = User
 
-    list_display = ('id', 'email', 'is_staff', 'is_active', 'date_joined',)
+    list_display = (
+        'id',
+        'email',
+        'is_staff',
+        'is_active',
+        'date_joined',
+    )
     search_fields = ('email',)
-    list_filter = ('is_staff', 'is_active', 'is_superuser',)
+    list_filter = (
+        'is_staff',
+        'is_active',
+        'is_superuser',
+    )
     ordering = ('email',)
-    readonly_fields = ('date_joined', 'email_verification_token',)
+    readonly_fields = (
+        'date_joined',
+        'email_verification_token',
+    )
     add_fieldsets = (
         (
             None,
             {
                 'classes': ('wide',),
-                'fields': ('email', 'password1', 'password2',),
+                'fields': (
+                    'email',
+                    'password1',
+                    'password2',
+                ),
             },
         ),
     )
@@ -32,7 +49,7 @@ class UserAdmin(BaseUserAdmin):
                     'email',
                     'password',
                 )
-            }
+            },
         ),
         (
             'Права доступа',
@@ -44,7 +61,7 @@ class UserAdmin(BaseUserAdmin):
                     'groups',
                     'user_permissions',
                 )
-            }
+            },
         ),
         (
             'Дополнительно',
@@ -54,6 +71,6 @@ class UserAdmin(BaseUserAdmin):
                     'email_verification_token',
                     'date_joined',
                 )
-            }
+            },
         ),
     )

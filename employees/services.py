@@ -3,7 +3,6 @@ from rest_framework.generics import get_object_or_404
 
 from .models import Employee, Task
 from .serializers import (
-    AvailableEmployeesAtWorkSerializer,
     StatisticEmployeesSerializer,
     StatisticSerializer,
     SubtasksRunningSerializer,
@@ -21,9 +20,7 @@ class StatisticsService:
     def get_employees_at_work(self):
         """Получение количества сотрудников."""
 
-        employees = self.user.employees.filter(
-            status=Employee.STATUS_AT_WORK
-        )
+        employees = self.user.employees.filter(status=Employee.STATUS_AT_WORK)
 
         serializer = StatisticEmployeesSerializer(employees, many=True)
 
@@ -49,34 +46,21 @@ class StatisticsService:
     def get_employee_workload(self):
         """Получение списка сотрудников и их задач, отсортированных по количеству активных задач."""
 
-        employees = Employee.objects.filter(
-            owner=self.user,
-        ).annotate(
-            active_tasks=Count(
-                'tasks', filter=Q(
-                    tasks__status__in=[
-                        Task.STATUS_CREATED,
-                        Task.STATUS_RUNNING
-                    ]
-                )
+        employees = (
+            Employee.objects.filter(
+                owner=self.user,
             )
-        ).prefetch_related(
-            Prefetch(
-                'tasks',
-                queryset=Task.objects.filter(
-                    status__in=[
-                        Task.STATUS_CREATED,
-                        Task.STATUS_RUNNING
-                    ]
-                )
+            .annotate(
+                active_tasks=Count('tasks', filter=Q(tasks__status__in=[Task.STATUS_CREATED, Task.STATUS_RUNNING]))
+            )
+            .prefetch_related(
+                Prefetch('tasks', queryset=Task.objects.filter(status__in=[Task.STATUS_CREATED, Task.STATUS_RUNNING]))
             )
         )
 
         serializer = StatisticSerializer(employees, many=True)
 
         return serializer.data
-
-
 
 
 class EmployeesSearchService:
@@ -89,9 +73,9 @@ class EmployeesSearchService:
 
     def get_available_employees_at_work(self, task_id):
         """Получение списка сотрудников, которые могут взять работы на исполнение.
-           Выполняет поиск по наименее загруженным сотрудникам или сотруднику (со статусом "на работе"),
-           выполняющему родительскую задачу, если ему назначено максимум на 2 задачи больше,
-           чем у наименее загруженного сотрудника."""
+        Выполняет поиск по наименее загруженным сотрудникам или сотруднику (со статусом "на работе"),
+        выполняющему родительскую задачу, если ему назначено максимум на 2 задачи больше,
+        чем у наименее загруженного сотрудника."""
 
         queryset = Employee.objects.filter(
             owner=self.user,
@@ -99,10 +83,12 @@ class EmployeesSearchService:
         ).annotate(
             tasks_count=Count(
                 'tasks',
-                filter=Q(tasks__status__in=[
-                    Task.STATUS_CREATED,
-                    Task.STATUS_COMPLETED,
-                ])
+                filter=Q(
+                    tasks__status__in=[
+                        Task.STATUS_CREATED,
+                        Task.STATUS_RUNNING,
+                    ]
+                ),
             )
         )
 
@@ -123,25 +109,20 @@ class EmployeesSearchService:
                 When(
                     id=parent_employee_id,
                     tasks_count__lte=min_count + 2,
-                    then=Value("Исполнитель родительской задачи")
+                    then=Value("Исполнитель родительской задачи"),
                 ),
-                When(
-                    tasks_count=min_count,
-                    then=Value("Минимальная загрузка")
-                ),
+                When(tasks_count=min_count, then=Value("Минимальная загрузка")),
                 output_field=CharField(),
             )
         )
 
-        available_employees  = queryset.filter(
+        available_employees = queryset.filter(
             Q(tasks_count=min_count)
-            |
-            Q(
+            | Q(
                 id=parent_employee_id,
                 tasks_count__lte=min_count + 2,
             )
         ).order_by('tasks_count')
-
 
         return available_employees
 
@@ -186,17 +167,14 @@ class ImportantTaskService:
         employees_service = EmployeesSearchService(self.user)
 
         for task in tasks:
-            employees = employees_service.get_available_employees_at_work(
-                task.id
-            )
+            employees = employees_service.get_available_employees_at_work(task.id)
 
-            result.append({
-                "Важная задача": task.title,
-                "Срок": task.deadline,
-                "ФИО сотрудника": [
-                    employee.full_name
-                    for employee in employees
-                ]
-            })
+            result.append(
+                {
+                    "Важная задача": task.title,
+                    "Срок": task.deadline,
+                    "ФИО сотрудника": [employee.full_name for employee in employees],
+                }
+            )
 
         return result

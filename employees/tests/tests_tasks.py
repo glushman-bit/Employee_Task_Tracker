@@ -4,10 +4,10 @@ from django.urls import reverse
 from django.utils import timezone
 from rest_framework import status
 
-from employees.models import Employee, Task
+from employees.models import Task
 from users.models import User
+
 from .base_setup import EmployeesTasksSetUp
-from employees.services import StatisticsService
 
 
 class TasksTest(EmployeesTasksSetUp):
@@ -85,8 +85,7 @@ class TasksTest(EmployeesTasksSetUp):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
-            response.data['performer'][0],
-            'Нельзя назначить задачу сотруднику, который сейчас не находится на работе.'
+            response.data['performer'][0], 'Нельзя назначить задачу сотруднику, который сейчас не находится на работе.'
         )
 
     def test_not_view_list_tasks_without_authenticate(self):
@@ -117,10 +116,7 @@ class TasksTest(EmployeesTasksSetUp):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        task_ids = [
-            task['id']
-            for task in response.data['results']
-        ]
+        task_ids = [task['id'] for task in response.data['results']]
 
         self.assertNotIn(other_task.id, task_ids)
 

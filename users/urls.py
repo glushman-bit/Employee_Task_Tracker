@@ -3,9 +3,7 @@ from rest_framework.routers import SimpleRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from users.apps import UsersConfig
-from users.views import UserViewSet, UserCreateAPIView
-from users.views import VerificationEmailView
-
+from users.views import UserCreateAPIView, UserViewSet, VerificationEmailView
 
 app_name = UsersConfig.name
 
@@ -17,4 +15,4 @@ urlpatterns = [
     path('verify/<uuid:token>/', VerificationEmailView.as_view(), name='verify'),
     path('login/', TokenObtainPairView.as_view(), name='login'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    ] + router.urls
+] + router.urls

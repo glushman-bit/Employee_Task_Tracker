@@ -1,8 +1,9 @@
 from django.urls import reverse
 from rest_framework import status
 
-from employees.models import Employee, Task
+from employees.models import Employee
 from users.models import User
+
 from .base_setup import EmployeesTasksSetUp
 
 
@@ -56,7 +57,7 @@ class EmployeesTest(EmployeesTasksSetUp):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['full_name'],'Пронин Иван')
+        self.assertEqual(response.data['full_name'], 'Пронин Иван')
 
     def test_delete_employee(self):
         """Тест на удаление сотрудника."""
@@ -108,10 +109,7 @@ class EmployeesTest(EmployeesTasksSetUp):
         self.client.force_authenticate(user=self.user)
         response = self.client.get(url)
 
-        employee_id = [
-            employee['id']
-            for employee in response.data['results']
-        ]
+        employee_id = [employee['id'] for employee in response.data['results']]
 
         self.assertNotIn(other_employee.id, employee_id)
 
