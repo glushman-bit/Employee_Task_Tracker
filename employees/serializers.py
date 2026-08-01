@@ -1,8 +1,9 @@
-from rest_framework.exceptions import ValidationError
-from rest_framework.fields import IntegerField, SerializerMethodField, CharField
-from rest_framework.serializers import ModelSerializer
-from employees.models import Employee, Task
 from django.utils import timezone
+from rest_framework.exceptions import ValidationError
+from rest_framework.fields import CharField, IntegerField, SerializerMethodField
+from rest_framework.serializers import ModelSerializer
+
+from employees.models import Employee, Task
 
 
 class EmployeeSerializer(ModelSerializer):
@@ -37,7 +38,7 @@ class TaskSerializer(ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ('id', 'title', 'description', 'parent_task', 'status', 'performer', 'deadline', 'priority',)
+        fields = ('id', 'title', 'description', 'parent_task', 'status', 'performer', 'deadline', 'priority', 'is_overdue', 'completed_at',)
 
 
 class TaskCreateSerializer(ModelSerializer):
@@ -45,7 +46,7 @@ class TaskCreateSerializer(ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ('title', 'description', 'parent_task', 'performer', 'deadline', 'priority', 'status',)
+        fields = ('title', 'description', 'parent_task', 'performer', 'deadline', 'priority', 'status', 'completed_at',)
 
     def __init__(self, *args, **kwargs):
         """Инициализирует сериализатор и ограничивает доступный список исполнителей и задач."""
@@ -64,6 +65,9 @@ class TaskCreateSerializer(ModelSerializer):
 
     def validate_performer(self, employee):
         """Проверка статуса сотрудника."""
+
+        if employee is None:
+            return employee
 
         if employee.status != Employee.STATUS_AT_WORK:
             raise ValidationError(
