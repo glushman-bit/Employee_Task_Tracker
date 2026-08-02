@@ -95,7 +95,7 @@ class TaskCreateSerializer(ModelSerializer):
         super().__init__(*args, **kwargs)
         request = self.context.get('request')
 
-        if request:
+        if request and request.user.is_authenticated:
             self.fields['performer'].queryset = Employee.objects.filter(
                 owner=request.user,
             )
@@ -103,6 +103,10 @@ class TaskCreateSerializer(ModelSerializer):
             self.fields['parent_task'].queryset = Task.objects.filter(
                 owner=request.user,
             )
+
+        else:
+            self.fields['performer'].queryset = Employee.objects.none()
+            self.fields['parent_task'].queryset = Task.objects.none()
 
     def validate_performer(self, employee):
         """Проверка статуса сотрудника."""

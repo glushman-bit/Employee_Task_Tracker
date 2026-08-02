@@ -14,6 +14,65 @@ from employees.serializers import (
     TaskSerializer,
 )
 from employees.services import EmployeesSearchService, ImportantTaskService, StatisticsService
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+
+
+employee_filter_parameters = [
+    openapi.Parameter(
+        "status",
+        openapi.IN_QUERY,
+        description="Фильтр по статусу сотрудника",
+        type=openapi.TYPE_STRING,
+        enum=[
+            "На работе",
+            "Отпуск",
+            "Больничный",
+            "Выходной",
+        ]
+    ),
+    openapi.Parameter(
+        "position",
+        openapi.IN_QUERY,
+        description="Фильтр по должности",
+        type=openapi.TYPE_STRING,
+    ),
+]
+
+task_filter_parameters = [
+    openapi.Parameter(
+        "status",
+        openapi.IN_QUERY,
+        description="Фильтр по статусу задачи",
+        type=openapi.TYPE_STRING,
+        enum=[
+            "Создана",
+            "Выполняется",
+            "Завершена",
+        ],
+    ),
+    openapi.Parameter(
+        "performer",
+        openapi.IN_QUERY,
+        description="Фильтр по исполнителю задачи",
+        type=openapi.TYPE_INTEGER,
+    ),
+    openapi.Parameter(
+        "parent_task",
+        openapi.IN_QUERY,
+        description="Фильтр по родительской задаче",
+        type=openapi.TYPE_INTEGER,
+    ),
+    openapi.Parameter(
+        "ordering",
+        openapi.IN_QUERY,
+        description=(
+            "Сортировка: id, deadline, priority. "
+            "Для обратного порядка используйте -"
+        ),
+        type=openapi.TYPE_STRING,
+    ),
+]
 
 
 class EmployeeViewSet(ModelViewSet):
@@ -35,6 +94,19 @@ class EmployeeViewSet(ModelViewSet):
     ordering = [
         'id',
     ]
+
+    @swagger_auto_schema(
+        tags=["Сотрудники"],
+        operation_summary="Получить список сотрудников",
+        operation_description=(
+            "Возвращает список сотрудников текущего пользователя "
+            "с возможностью фильтрации."
+        ),
+        manual_parameters=employee_filter_parameters,
+    )
+    def list(self, request, *args, **kwargs):
+        """Определение метода для swagger."""
+        return super().list(request, *args, **kwargs)
 
     def get_serializer_class(self):
         """Переопределение сериалайзера в зависимости от действия."""
@@ -94,6 +166,19 @@ class TaskViewSet(ModelViewSet):
         'id',
     ]
 
+    @swagger_auto_schema(
+        tags=["Задачи"],
+        operation_summary="Получить список задач",
+        operation_description=(
+            "Возвращает список задач текущего пользователя "
+            "с возможностью фильтрации и сортировки."
+        ),
+        manual_parameters=task_filter_parameters,
+    )
+    def list(self, request, *args, **kwargs):
+        """Определение метода для swagger."""
+        return super().list(request, *args, **kwargs)
+
     def get_serializer_class(self):
         """Переопределение сериалайзера в зависимости от действия."""
 
@@ -120,7 +205,7 @@ class StatisticsEmployeesAPIView(APIView):
     """Класс вывода статистики по количеству сотрудников."""
 
     def get(self, request):
-        """Вывод статистики."""
+        """Вывод данных по количеству сотрудников на работе и отсутствующих."""
 
         service = StatisticsService(request.user)
 
@@ -137,7 +222,7 @@ class StatisticsEmployeeWorkloadAPIView(APIView):
     """Вывод статистики по сотрудникам и их задачам."""
 
     def get(self, request):
-        """Вывод статистики."""
+        """Вывод статистики по сотрудникам имеющим задачи."""
 
         service = StatisticsService(request.user)
 
@@ -152,7 +237,7 @@ class StatisticsTasksWithSubtasks(APIView):
     """Вывод статистики по задачам не взятым в работу, но имеющим подзадачи взятые в работу."""
 
     def get(self, request):
-        """Вывод статистики."""
+        """Вывод статистики по задачам не взятым в работу, но имеющим подзадачи взятые в работу.."""
 
         service = ImportantTaskService(request.user)
 
@@ -168,7 +253,7 @@ class ImportantTasksAPIView(APIView):
     """Вывод важных задач и рекомендуемых исполнителей."""
 
     def get(self, request):
-        """Получение данных."""
+        """Получение данных о важных задачах и рекомендуемых исполнителей для их выполнения."""
 
         service = ImportantTaskService(request.user)
 

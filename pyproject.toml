@@ -17,6 +17,9 @@ pillow = "^12.3.0"
 ipython = "==9.16.0"
 pytest-cov = "^7.1.0"
 django-filter = "^26.1"
+django-cors-headers = "^4.9.0"
+drf-yasg = "^1.21.15"
+gunicorn = "^26.0.0"
 
 
 [tool.poetry.group.lint.dependencies]
