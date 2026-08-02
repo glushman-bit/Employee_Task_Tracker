@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Трекер задач сотрудников."
 authors = ["Glushenkov Ivan <you@example.com>"]
 readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.14"
