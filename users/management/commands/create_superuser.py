@@ -23,4 +23,3 @@ class Command(BaseCommand):
 
         else:
             self.stdout.write(self.style.SUCCESS(f'Суперпользователь <{user.email}> уже существует.'))
-
