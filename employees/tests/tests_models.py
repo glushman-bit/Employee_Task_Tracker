@@ -70,3 +70,25 @@ class TaskModelTest(EmployeesTasksSetUp):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn('Срок выполнения не может быть раньше текущего времени.', str(response.data))
+
+    def test_task_status_changes_when_performer_added(self):
+        """При назначении исполнителя статус задачи меняется на выполняется."""
+
+        self.task1.performer = self.employee1
+        self.task1.save()
+
+        self.assertEqual(
+            self.task1.status,
+            Task.STATUS_RUNNING,
+        )
+
+    def test_task_without_performer_remains_created(self):
+        """Без исполнителя задача остается созданной."""
+
+        self.task1.performer = None
+        self.task1.save()
+
+        self.assertEqual(
+            self.task1.status,
+            Task.STATUS_CREATED,
+        )

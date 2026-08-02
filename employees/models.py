@@ -138,6 +138,9 @@ class Task(models.Model):
     def save(self, *args, **kwargs):
         """Автоматическая установка времени завершения задачи при установке статуса STATUS_COMPLETED."""
 
+        if self.performer and self.status == self.STATUS_CREATED:
+            self.status = self.STATUS_RUNNING
+
         if self.status == self.STATUS_COMPLETED:
             if self.completed_at is None:
                 self.completed_at = timezone.now()
