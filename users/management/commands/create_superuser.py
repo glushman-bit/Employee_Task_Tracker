@@ -12,7 +12,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        user, create = User.objects.create(email=os.getenv('ADMIN_EMAIL'))
+        user, create = User.objects.get_or_create(email=os.getenv('ADMIN_EMAIL'))
         if create:
             user.set_password(os.getenv('ADMIN_PASSWORD'))
             user.is_active = True
