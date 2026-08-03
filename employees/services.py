@@ -1,5 +1,9 @@
+from typing import Any
+
 from django.db.models import Case, CharField, Count, Min, Prefetch, Q, Value, When
 from rest_framework.generics import get_object_or_404
+from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
+from django.db.models import QuerySet
 
 from .models import Employee, Task
 from .serializers import (
@@ -7,17 +11,18 @@ from .serializers import (
     StatisticSerializer,
     SubtasksRunningSerializer,
 )
+from users.models import User
 
 
 class StatisticsService:
     """Класс вывода статистики."""
 
-    def __init__(self, user):
+    def __init__(self, user: User) -> None:
         """Передача пользователя в конструктор."""
 
         self.user = user
 
-    def get_employees_at_work(self):
+    def get_employees_at_work(self) -> dict[str, Any]:
         """Получение количества сотрудников."""
 
         employees = self.user.employees.filter(status=Employee.STATUS_AT_WORK)
@@ -29,7 +34,7 @@ class StatisticsService:
             "Данные о сотрудниках": serializer.data,
         }
 
-    def get_employee_off(self):
+    def get_employee_off(self) -> dict[str, Any]:
         """Получение количества отсутствующих сотрудников."""
 
         employees = self.user.employees.filter(
@@ -43,7 +48,7 @@ class StatisticsService:
             "Данные о сотрудниках": serializer.data,
         }
 
-    def get_employee_workload(self):
+    def get_employee_workload(self) -> ReturnList:
         """Получение списка сотрудников и их задач, отсортированных по количеству активных задач."""
 
         employees = (
@@ -66,12 +71,12 @@ class StatisticsService:
 class EmployeesSearchService:
     """Класс подбора сотрудников для выполнения задач."""
 
-    def __init__(self, user):
+    def __init__(self, user: User) -> None:
         """Передача пользователя в конструктор."""
 
         self.user = user
 
-    def get_available_employees_at_work(self, task_id):
+    def get_available_employees_at_work(self, task_id: int) -> QuerySet[Employee]:
         """Получение списка сотрудников, которые могут взять работы на исполнение.
         Выполняет поиск по наименее загруженным сотрудникам или сотруднику (со статусом "на работе"),
         выполняющему родительскую задачу, если ему назначено максимум на 2 задачи больше,
@@ -130,12 +135,12 @@ class EmployeesSearchService:
 class ImportantTaskService:
     """Класс вывода результата по поиску задач и сотрудников для их выполнения."""
 
-    def __init__(self, user):
+    def __init__(self, user: User) -> None:
         """Передача пользователя в конструктор."""
 
         self.user = user
 
-    def get_important_tasks_queryset(self):
+    def get_important_tasks_queryset(self) -> QuerySet[Task]:
         """Получение задач не взятых в работу, но имеющих выполняемые подзадачи."""
 
         tasks = Task.objects.filter(
@@ -146,7 +151,7 @@ class ImportantTaskService:
 
         return tasks
 
-    def get_task_in_created_with_subtasks_in_running(self):
+    def get_task_in_created_with_subtasks_in_running(self) -> dict[str, Any]:
         """Получение задач не взятых в работу, но имеющих подзадачи взятые в работу."""
 
         tasks = self.get_important_tasks_queryset()
@@ -158,7 +163,7 @@ class ImportantTaskService:
             "Задачи": serializer.data,
         }
 
-    def get_important_tasks(self):
+    def get_important_tasks(self) -> list[dict[str, Any]]:
 
         tasks = self.get_important_tasks_queryset()
 

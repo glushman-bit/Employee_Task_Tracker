@@ -1,6 +1,8 @@
 from rest_framework import status
 from rest_framework.generics import CreateAPIView, get_object_or_404
 from rest_framework.permissions import AllowAny
+from rest_framework.request import Request
+from django.db.models import QuerySet
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
@@ -15,7 +17,7 @@ class UserViewSet(ModelViewSet):
 
     serializer_class = UserSerializer
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet:
         """Получение прав доступа для изменения профиля пользователя.
         Пользователь может видеть и редактировать только себя,
         Администратор может видеть и редактировать всех."""
@@ -38,7 +40,7 @@ class VerificationEmailView(APIView):
 
     permission_classes = [AllowAny]
 
-    def get(self, request, token):
+    def get(self, request: Request, token: str) -> Response:
         user = get_object_or_404(User, email_verification_token=token)
         user.is_active = True
         user.email_verification_token = None

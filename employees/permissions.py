@@ -1,4 +1,7 @@
+from typing import Any
 from rest_framework.permissions import BasePermission
+from rest_framework.request import Request
+from rest_framework.views import APIView
 
 
 class IsOwner(BasePermission):
@@ -6,7 +9,7 @@ class IsOwner(BasePermission):
 
     message = "Вы не являетесь владельцем."
 
-    def has_object_permission(self, request, view, obj):
+    def has_object_permission(self, request: Request, view: APIView, obj:Any) -> bool:
         """Метод проверки владельца."""
 
         if obj.owner == request.user:

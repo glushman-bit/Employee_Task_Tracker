@@ -1,11 +1,12 @@
 import os
 
 from django.core.mail import send_mail
+from .models import User
 
 from config.settings import DEFAULT_FROM_EMAIL
 
 
-def send_verification_email(user):
+def send_verification_email(user: User) -> None:
     """Функция отправки письма для верификации."""
 
     link = f'{os.getenv('HOST')}/users/verify/{user.email_verification_token}/'

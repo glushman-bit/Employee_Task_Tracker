@@ -1,4 +1,5 @@
 import os
+from typing import Any
 
 from django.core.management import BaseCommand
 
@@ -10,10 +11,10 @@ class Command(BaseCommand):
 
     help = "Создание суперпользователя"
 
-    def handle(self, *args, **options):
+    def handle(self, *args: Any, **options: Any) -> None:
 
-        user, create = User.objects.get_or_create(email=os.getenv('ADMIN_EMAIL'))
-        if create:
+        user, created = User.objects.get_or_create(email=os.getenv('ADMIN_EMAIL'))
+        if created:
             user.set_password(os.getenv('ADMIN_PASSWORD'))
             user.is_active = True
             user.is_staff = True

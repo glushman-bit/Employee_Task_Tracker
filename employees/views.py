@@ -1,6 +1,10 @@
+from typing import Any
+
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
+from rest_framework.request import Request
 from rest_framework.response import Response
+from django.db.models import QuerySet
 from rest_framework.serializers import IntegerField, Serializer
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
@@ -104,11 +108,11 @@ class EmployeeViewSet(ModelViewSet):
         ),
         manual_parameters=employee_filter_parameters,
     )
-    def list(self, request, *args, **kwargs):
+    def list(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         """Определение метода для swagger."""
         return super().list(request, *args, **kwargs)
 
-    def get_serializer_class(self):
+    def get_serializer_class(self) -> type[Serializer]:
         """Переопределение сериалайзера в зависимости от действия."""
 
         if self.request.query_params.get('task_id') is not None:
@@ -119,7 +123,7 @@ class EmployeeViewSet(ModelViewSet):
 
         return EmployeeSerializer
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet[Employee]:
         """Фильтруем вывод списка сотрудников по руководителю."""
 
         if not self.request.user.is_authenticated:
@@ -137,7 +141,7 @@ class EmployeeViewSet(ModelViewSet):
 
         return Employee.objects.filter(owner=self.request.user)
 
-    def perform_create(self, serializer):
+    def perform_create(self, serializer: Serializer) -> None:
         """Автоматическая установка руководителя при создании."""
 
         serializer.save(owner=self.request.user)
@@ -175,11 +179,11 @@ class TaskViewSet(ModelViewSet):
         ),
         manual_parameters=task_filter_parameters,
     )
-    def list(self, request, *args, **kwargs):
+    def list(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         """Определение метода для swagger."""
         return super().list(request, *args, **kwargs)
 
-    def get_serializer_class(self):
+    def get_serializer_class(self) -> type[Serializer]:
         """Переопределение сериалайзера в зависимости от действия."""
 
         if self.action in ['create', 'update', 'partial_update']:
@@ -187,7 +191,7 @@ class TaskViewSet(ModelViewSet):
 
         return TaskSerializer
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet[Task]:
         """Фильтруем вывод списка задач по руководителю."""
 
         if not self.request.user.is_authenticated:
@@ -195,7 +199,7 @@ class TaskViewSet(ModelViewSet):
 
         return Task.objects.filter(owner=self.request.user)
 
-    def perform_create(self, serializer):
+    def perform_create(self, serializer: Serializer) -> None:
         """Автоматическая установка руководителя/владельца при создании."""
 
         serializer.save(owner=self.request.user)
@@ -204,7 +208,7 @@ class TaskViewSet(ModelViewSet):
 class StatisticsEmployeesAPIView(APIView):
     """Класс вывода статистики по количеству сотрудников."""
 
-    def get(self, request):
+    def get(self, request: Request) -> Response:
         """Вывод данных по количеству сотрудников на работе и отсутствующих."""
 
         service = StatisticsService(request.user)
@@ -221,7 +225,7 @@ class StatisticsEmployeesAPIView(APIView):
 class StatisticsEmployeeWorkloadAPIView(APIView):
     """Вывод статистики по сотрудникам и их задачам."""
 
-    def get(self, request):
+    def get(self, request: Request) -> Response:
         """Вывод статистики по сотрудникам имеющим задачи."""
 
         service = StatisticsService(request.user)
@@ -236,7 +240,7 @@ class StatisticsEmployeeWorkloadAPIView(APIView):
 class StatisticsTasksWithSubtasks(APIView):
     """Вывод статистики по задачам не взятым в работу, но имеющим подзадачи взятые в работу."""
 
-    def get(self, request):
+    def get(self, request: Request) -> Response:
         """Вывод статистики по задачам не взятым в работу, но имеющим подзадачи взятые в работу.."""
 
         service = ImportantTaskService(request.user)
@@ -252,7 +256,7 @@ class StatisticsTasksWithSubtasks(APIView):
 class ImportantTasksAPIView(APIView):
     """Вывод важных задач и рекомендуемых исполнителей."""
 
-    def get(self, request):
+    def get(self, request: Request) -> Response:
         """Получение данных о важных задачах и рекомендуемых исполнителей для их выполнения."""
 
         service = ImportantTaskService(request.user)

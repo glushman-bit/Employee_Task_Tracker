@@ -1,9 +1,12 @@
+from typing import Any
+from datetime import datetime
 from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import CharField, IntegerField, SerializerMethodField
 from rest_framework.serializers import ModelSerializer
 
 from employees.models import Employee, Task
+from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
 
 
 class EmployeeSerializer(ModelSerializer):
@@ -89,7 +92,7 @@ class TaskCreateSerializer(ModelSerializer):
             'completed_at',
         )
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         """Инициализирует сериализатор и ограничивает доступный список исполнителей и задач."""
 
         super().__init__(*args, **kwargs)
@@ -108,7 +111,7 @@ class TaskCreateSerializer(ModelSerializer):
             self.fields['performer'].queryset = Employee.objects.none()
             self.fields['parent_task'].queryset = Task.objects.none()
 
-    def validate_performer(self, employee):
+    def validate_performer(self, employee: Employee | None) -> Employee | None:
         """Проверка статуса сотрудника."""
 
         if employee is None:
@@ -119,7 +122,7 @@ class TaskCreateSerializer(ModelSerializer):
 
         return employee
 
-    def validate_deadline(self, value):
+    def validate_deadline(self, value: datetime) -> datetime:
         """Проверка, что срок выполнения не находится в прошлом."""
 
         if value < timezone.now():
@@ -198,7 +201,7 @@ class SubtasksRunningSerializer(ModelSerializer):
             'running_subtasks',
         )
 
-    def get_running_subtasks(self, obj):
+    def get_running_subtasks(self, obj: Task) -> ReturnList:
         """Реализация поля 'running_subtasks'."""
 
         tasks = obj.subtasks.filter(status=Task.STATUS_RUNNING)

@@ -27,6 +27,46 @@
 
 ---
 
+### Структура проекта
+```
+employee_task_tracker/
+├── .github/
+│   └── workflows/
+│       └── ci.yml                 # GitHub Actions
+├── config/                        # Настройки Django
+│   ├── settings.py
+│   ├── urls.py
+│   ├── asgi.py
+│   └── wsgi.py
+├── employees/                     # Сотрудники, задачи и бизнес-логика
+│   ├── migrations/
+│   ├── tests/                     # Тесты приложения
+│   ├── fixtures/                  # Фикстуры
+│   ├── models.py
+│   ├── serializers.py
+│   ├── services.py                # Бизнес-логика
+│   ├── permissions.py
+│   ├── urls.py
+│   └── views.py
+├── users/                         # Пользователи и аутентификация
+│   ├── management/                # Пользовательские management-команды
+│   ├── migrations/
+│   ├── fixtures/                  # Фикстуры
+│   ├── models.py
+│   ├── services.py                # Бизнес-логика пользователей
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── nginx/                         # Конфигурация Nginx
+├── static/                        # Статические файлы
+├── docker-compose.yml             # Запуск сервисов
+├── Dockerfile                     # Сборка приложения
+├── manage.py                      # Управление Django
+├── pyproject.toml                 # Зависимости проекта
+└── README.md
+```
+---
+
 ### Технологический стек
  - Язык разработки: Python 3.12+Фреймворк: Django 6.0 / Django REST Framework (DRF)
  - База данных: PostgreSQL
