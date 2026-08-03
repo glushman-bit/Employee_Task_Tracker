@@ -6,7 +6,7 @@ from rest_framework.fields import CharField, IntegerField, SerializerMethodField
 from rest_framework.serializers import ModelSerializer
 
 from employees.models import Employee, Task
-from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
+from rest_framework.utils.serializer_helpers import ReturnList
 
 
 class EmployeeSerializer(ModelSerializer):

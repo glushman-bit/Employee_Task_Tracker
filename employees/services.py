@@ -2,7 +2,7 @@ from typing import Any
 
 from django.db.models import Case, CharField, Count, Min, Prefetch, Q, Value, When
 from rest_framework.generics import get_object_or_404
-from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
+from rest_framework.utils.serializer_helpers import ReturnList
 from django.db.models import QuerySet
 
 from .models import Employee, Task

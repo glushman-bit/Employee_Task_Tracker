@@ -21,7 +21,6 @@ from employees.services import EmployeesSearchService, ImportantTaskService, Sta
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
-
 employee_filter_parameters = [
     openapi.Parameter(
         "status",
@@ -33,7 +32,7 @@ employee_filter_parameters = [
             "Отпуск",
             "Больничный",
             "Выходной",
-        ]
+        ],
     ),
     openapi.Parameter(
         "position",
@@ -70,10 +69,7 @@ task_filter_parameters = [
     openapi.Parameter(
         "ordering",
         openapi.IN_QUERY,
-        description=(
-            "Сортировка: id, deadline, priority. "
-            "Для обратного порядка используйте -"
-        ),
+        description=("Сортировка: id, deadline, priority. " "Для обратного порядка используйте -"),
         type=openapi.TYPE_STRING,
     ),
 ]
@@ -102,10 +98,7 @@ class EmployeeViewSet(ModelViewSet):
     @swagger_auto_schema(
         tags=["Сотрудники"],
         operation_summary="Получить список сотрудников",
-        operation_description=(
-            "Возвращает список сотрудников текущего пользователя "
-            "с возможностью фильтрации."
-        ),
+        operation_description=("Возвращает список сотрудников текущего пользователя " "с возможностью фильтрации."),
         manual_parameters=employee_filter_parameters,
     )
     def list(self, request: Request, *args: Any, **kwargs: Any) -> Response:
@@ -174,8 +167,7 @@ class TaskViewSet(ModelViewSet):
         tags=["Задачи"],
         operation_summary="Получить список задач",
         operation_description=(
-            "Возвращает список задач текущего пользователя "
-            "с возможностью фильтрации и сортировки."
+            "Возвращает список задач текущего пользователя " "с возможностью фильтрации и сортировки."
         ),
         manual_parameters=task_filter_parameters,
     )

@@ -135,10 +135,7 @@ SWAGGER_SETTINGS = {
             "type": "apiKey",
             "name": "Authorization",
             "in": "header",
-            "description": (
-                "Введите JWT access-токен в формате: "
-                "Bearer <access_token>"
-            ),
+            "description": ("Введите JWT access-токен в формате: " "Bearer <access_token>"),
         }
     },
 }

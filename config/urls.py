@@ -8,7 +8,6 @@ from rest_framework import permissions
 
 from config import settings
 
-
 schema_view = get_schema_view(
     openapi.Info(
         title="Snippets API",

@@ -9,7 +9,7 @@ class IsOwner(BasePermission):
 
     message = "Вы не являетесь владельцем."
 
-    def has_object_permission(self, request: Request, view: APIView, obj:Any) -> bool:
+    def has_object_permission(self, request: Request, view: APIView, obj: Any) -> bool:
         """Метод проверки владельца."""
 
         if obj.owner == request.user:
