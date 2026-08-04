@@ -40,6 +40,16 @@ employee_filter_parameters = [
         description="Фильтр по должности",
         type=openapi.TYPE_STRING,
     ),
+    openapi.Parameter(
+        "task_id",
+        openapi.IN_QUERY,
+        description=(
+            "ID задачи. Если указан, возвращаются сотрудники, "
+            "которым можно назначить эту задачу и причина выбора."
+        ),
+        type=openapi.TYPE_INTEGER,
+        required=False,
+    ),
 ]
 
 task_filter_parameters = [
@@ -71,16 +81,6 @@ task_filter_parameters = [
         openapi.IN_QUERY,
         description=("Сортировка: id, deadline, priority. " "Для обратного порядка используйте -"),
         type=openapi.TYPE_STRING,
-    ),
-    openapi.Parameter(
-        "task_id",
-        openapi.IN_QUERY,
-        description=(
-            "ID задачи. Если указан, возвращаются сотрудники, "
-            "которым можно назначить эту задачу и причина выбора."
-        ),
-        type=openapi.TYPE_INTEGER,
-        required=False,
     ),
 ]
 
