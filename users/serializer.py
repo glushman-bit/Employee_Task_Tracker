@@ -3,7 +3,6 @@ from typing import Any
 from rest_framework.serializers import ModelSerializer
 
 from users.models import User
-from users.services import send_verification_email
 
 
 class UserSerializer(ModelSerializer):
@@ -45,7 +44,5 @@ class UserCreateSerializer(ModelSerializer):
         user = User(email=validated_data['email'], is_active=False)
         user.set_password(validated_data['password'])
         user.save()
-
-        send_verification_email(user)
 
         return user

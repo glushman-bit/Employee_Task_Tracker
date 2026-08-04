@@ -1,13 +1,16 @@
+from typing import Any
+
+from django.db.models import QuerySet
 from rest_framework import status
 from rest_framework.generics import CreateAPIView, get_object_or_404
 from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
-from django.db.models import QuerySet
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
 from users.models import User
+from users.services import send_verification_email
 
 from .serializer import UserCreateSerializer, UserSerializer
 
@@ -33,6 +36,30 @@ class UserCreateAPIView(CreateAPIView):
 
     serializer_class = UserCreateSerializer
     permission_classes = [AllowAny]
+
+    def create(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        """Создание пользователя и отправка письма для подтверждения Email."""
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user = serializer.save()
+
+        print(user.email)
+        print(user.email_verification_token)
+
+        send_verification_email(user)
+
+        return Response(
+            {
+                "email": user.email,
+                "message": (
+                    "Пользователь успешно зарегистрирован. "
+                    "Проверьте электронную почту для подтверждения регистрации."
+                ),
+            },
+            status=status.HTTP_201_CREATED,
+        )
 
 
 class VerificationEmailView(APIView):
