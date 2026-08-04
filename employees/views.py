@@ -72,6 +72,16 @@ task_filter_parameters = [
         description=("Сортировка: id, deadline, priority. " "Для обратного порядка используйте -"),
         type=openapi.TYPE_STRING,
     ),
+    openapi.Parameter(
+        "task_id",
+        openapi.IN_QUERY,
+        description=(
+            "ID задачи. Если указан, возвращаются сотрудники, "
+            "которым можно назначить эту задачу и причина выбора."
+        ),
+        type=openapi.TYPE_INTEGER,
+        required=False,
+    ),
 ]
 
 
