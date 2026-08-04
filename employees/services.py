@@ -1,9 +1,10 @@
 from typing import Any
 
-from django.db.models import Case, CharField, Count, Min, Prefetch, Q, Value, When
+from django.db.models import Case, CharField, Count, Min, Prefetch, Q, QuerySet, Value, When
 from rest_framework.generics import get_object_or_404
 from rest_framework.utils.serializer_helpers import ReturnList
-from django.db.models import QuerySet
+
+from users.models import User
 
 from .models import Employee, Task
 from .serializers import (
@@ -11,7 +12,6 @@ from .serializers import (
     StatisticSerializer,
     SubtasksRunningSerializer,
 )
-from users.models import User
 
 
 class StatisticsService:

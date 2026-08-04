@@ -1,10 +1,12 @@
 from typing import Any
 
+from django.db.models import QuerySet
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.filters import OrderingFilter
 from rest_framework.request import Request
 from rest_framework.response import Response
-from django.db.models import QuerySet
 from rest_framework.serializers import IntegerField, Serializer
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
@@ -18,8 +20,6 @@ from employees.serializers import (
     TaskSerializer,
 )
 from employees.services import EmployeesSearchService, ImportantTaskService, StatisticsService
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
 
 employee_filter_parameters = [
     openapi.Parameter(

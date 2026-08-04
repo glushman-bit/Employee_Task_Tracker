@@ -1,12 +1,13 @@
-from typing import Any
 from datetime import datetime
+from typing import Any
+
 from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import CharField, IntegerField, SerializerMethodField
 from rest_framework.serializers import ModelSerializer
+from rest_framework.utils.serializer_helpers import ReturnList
 
 from employees.models import Employee, Task
-from rest_framework.utils.serializer_helpers import ReturnList
 
 
 class EmployeeSerializer(ModelSerializer):
