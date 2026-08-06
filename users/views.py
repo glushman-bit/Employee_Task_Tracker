@@ -45,9 +45,6 @@ class UserCreateAPIView(CreateAPIView):
 
         user = serializer.save()
 
-        print(user.email)
-        print(user.email_verification_token)
-
         send_verification_email(user)
 
         return Response(
