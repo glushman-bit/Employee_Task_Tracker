@@ -79,7 +79,7 @@ task_filter_parameters = [
     openapi.Parameter(
         "ordering",
         openapi.IN_QUERY,
-        description=("Сортировка: id, deadline, priority. " "Для обратного порядка используйте -"),
+        description=("Сортировка: id, deadline, priority. Для обратного порядка используйте -"),
         type=openapi.TYPE_STRING,
     ),
 ]
@@ -108,7 +108,7 @@ class EmployeeViewSet(ModelViewSet):
     @swagger_auto_schema(
         tags=["Сотрудники"],
         operation_summary="Получить список сотрудников",
-        operation_description=("Возвращает список сотрудников текущего пользователя " "с возможностью фильтрации."),
+        operation_description=("Возвращает список сотрудников текущего пользователя с возможностью фильтрации."),
         manual_parameters=employee_filter_parameters,
     )
     def list(self, request: Request, *args: Any, **kwargs: Any) -> Response:
@@ -177,7 +177,7 @@ class TaskViewSet(ModelViewSet):
         tags=["Задачи"],
         operation_summary="Получить список задач",
         operation_description=(
-            "Возвращает список задач текущего пользователя " "с возможностью фильтрации и сортировки."
+            "Возвращает список задач текущего пользователя с возможностью фильтрации и сортировки."
         ),
         manual_parameters=task_filter_parameters,
     )
@@ -243,7 +243,7 @@ class StatisticsTasksWithSubtasks(APIView):
     """Вывод статистики по задачам не взятым в работу, но имеющим подзадачи взятые в работу."""
 
     def get(self, request: Request) -> Response:
-        """Вывод статистики по задачам не взятым в работу, но имеющим подзадачи взятые в работу.."""
+        """Вывод статистики по задачам не взятым в работу, но имеющим подзадачи взятые в работу."""
 
         service = ImportantTaskService(request.user)
 

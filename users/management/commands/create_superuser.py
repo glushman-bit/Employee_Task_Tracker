@@ -23,4 +23,4 @@ class Command(BaseCommand):
             user.save()
 
         else:
-            self.stdout.write(self.style.SUCCESS(f'Суперпользователь <{user.email}> уже существует.'))
+            self.stdout.write(self.style.WARNING(f'Суперпользователь <{user.email}> уже существует.'))

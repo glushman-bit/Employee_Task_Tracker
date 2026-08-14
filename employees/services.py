@@ -56,10 +56,14 @@ class StatisticsService:
                 owner=self.user,
             )
             .annotate(
-                active_tasks=Count('tasks', filter=Q(tasks__status__in=[Task.STATUS_CREATED, Task.STATUS_RUNNING]))
+                active_tasks=Count('tasks', filter=Q(
+                    tasks__status__in=[Task.STATUS_CREATED, Task.STATUS_RUNNING]
+                ))
             )
             .prefetch_related(
-                Prefetch('tasks', queryset=Task.objects.filter(status__in=[Task.STATUS_CREATED, Task.STATUS_RUNNING]))
+                Prefetch('tasks', queryset=Task.objects.filter(
+                    status__in=[Task.STATUS_CREATED, Task.STATUS_RUNNING]
+                ))
             )
         )
 
