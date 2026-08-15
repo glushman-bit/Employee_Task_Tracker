@@ -1,14 +1,66 @@
 [tool.poetry]
 name = "employee-task-tracker"
 version = "0.1.0"
-description = ""
-authors = ["Your Name <you@example.com>"]
+description = "Трекер задач сотрудников."
+authors = ["Glushenkov Ivan <you@example.com>"]
 readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.14"
+django = "^6.0.7"
+djangorestframework = "^3.17.1"
+djangorestframework-simplejwt = "^5.5.1"
+python-dotenv = "^1.2.2"
+psycopg = {extras = ["binary"], version = "^3.3.4"}
+django-phonenumber-field = {extras = ["phonenumbers"], version = "^8.5.0"}
+pillow = "^12.3.0"
+ipython = "==9.16.0"
+pytest-cov = "^7.1.0"
+django-filter = "^26.1"
+django-cors-headers = "^4.9.0"
+drf-yasg = "^1.21.15"
+gunicorn = "^26.0.0"
 
+
+[tool.poetry.group.lint.dependencies]
+black = "^26.5.1"
+flake8 = "^7.3.0"
+mypy = "^2.3.0"
+isort = "^8.0.1"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 119
+skip-string-normalization = true
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+# максимальная длина строки
+profile = "black"
+line_length = 119
+skip = [".venv", "venv"]
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+show_error_codes = true
+exclude = "venv/|.venv/|build/|dist/|.mypy_cache/"

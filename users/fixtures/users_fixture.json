@@ -1,0 +1,78 @@
+[
+{
+    "model": "users.user",
+    "pk": 2,
+    "fields": {
+        "password": "pbkdf2_sha256$1200000$tO1EIk3jODcspnZbEJ9L0C$+X9KzVXvQYJlxul2oFrOfZQr9AZWprnaQbt7XCBsw1c=",
+        "last_login": null,
+        "is_superuser": false,
+        "first_name": "",
+        "last_name": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-07-28T19:06:26.983Z",
+        "email": "i_glush@list.ru",
+        "phone_number": "+79001234567",
+        "email_verification_token": "f9c49649-a559-4a50-a30f-43e081a6dbdf",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "pk": 3,
+    "fields": {
+        "password": "pbkdf2_sha256$1200000$dNGvwgxUhpyln9cON1Y5Uk$Zigs+FQcHtTXN8s+5rF3VJ1jNEfXXoPzBOhQ54/JKFo=",
+        "last_login": "2026-07-28T19:15:46.700Z",
+        "is_superuser": true,
+        "first_name": "",
+        "last_name": "",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2026-07-28T19:15:15.696Z",
+        "email": "admin@example.py",
+        "phone_number": null,
+        "email_verification_token": "43d5d4c3-51c1-40be-bf4c-8ffbe13680bd",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "pk": 4,
+    "fields": {
+        "password": "pbkdf2_sha256$1200000$cuwMdu2a2VDPOmCpqpMXt1$ym4hZFk5GlOOCqM5HxeQD181hh4Fc0B3E9FQ5NlfccI=",
+        "last_login": null,
+        "is_superuser": false,
+        "first_name": "Тест",
+        "last_name": "Тестов",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-07-29T06:31:58Z",
+        "email": "user_1@test.py",
+        "phone_number": null,
+        "email_verification_token": "b918807c-9a0b-4bcd-a4b6-b808c494803f",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.user",
+    "pk": 5,
+    "fields": {
+        "password": "pbkdf2_sha256$1200000$P8dFbL612dEJO0bnJ9KPzJ$Hov8YladL2NOUrny4h1Bth71Z94HJ9XtlfsDD9fLVPI=",
+        "last_login": null,
+        "is_superuser": false,
+        "first_name": "",
+        "last_name": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-07-31T19:22:08.016Z",
+        "email": "iv_glush@list.ru",
+        "phone_number": null,
+        "email_verification_token": null,
+        "groups": [],
+        "user_permissions": []
+    }
+}
+]

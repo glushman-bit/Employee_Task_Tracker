@@ -1,0 +1,19 @@
+[run]
+omit =
+    */migrations/*
+    */venv/*
+    */.venv/*
+    manage.py
+    */__init__.py
+    */config/*
+    */apps.py
+    */admin.py
+    */urls.py
+    */tests.py
+    */employees/tests/*
+
+[report]
+exclude_lines =
+    pragma: no cover
+    if __name__ == .__main__.:
+    def __str__
