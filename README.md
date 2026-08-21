@@ -644,3 +644,4 @@ docker compose logs -f nginx
               Django app
 
 Проект полностью развернут в Docker и поддерживает автоматический CI/CD деплой через GitHub Actions.
+
